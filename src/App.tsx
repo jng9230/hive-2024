@@ -1,24 +1,27 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Select from './components/Select';
 
 function App() {
+  const bunchOfChoices = [...Array(100).keys()].map(String);
+  const options = [
+    "really really really really really long choice wow",
+    "another one",
+    "choice one",
+    "choice two",
+    ...bunchOfChoices,
+  ]
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="space-y-4 p-2">
+      <Select label={"Single Select"}
+        options={options}
+      />
+      <Select label={"Multi-select"}
+        options={options}
+        isMultiSelect={true}
+      />
     </div>
   );
 }

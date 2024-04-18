@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { BiX } from "react-icons/bi";
+import Checkbox from './Checkbox';
 
 
 export default function Select({
@@ -18,7 +19,8 @@ export default function Select({
 
     const handleSelectClick = (d: string) => {
         console.log(`selected ${d}`)
-        setSelectedContent([...selectedContent, d])
+        setSelectedContent([d, ...selectedContent])
+        // TODO: toggle the checkbox
     }
 
     return (
@@ -38,7 +40,8 @@ export default function Select({
                     </>
                     :
                     <>
-                        <ul className="border-2 border-black p-2">
+                        <label htmlFor=""> {label} </label>
+                        <ul className="border-2 border-black p-2 max-h-20 overflow-y-auto">
                             {
                                 selectedContent.map((d, i) => {
                                     return (
@@ -51,12 +54,13 @@ export default function Select({
                             }
                         </ul>
                         <div className="border-2 border-black" >
-                            <ul className="max-h-60 overflow-y-scroll">
+                            <ul className="max-h-60 overflow-y-auto">
                                 {
                                     options.map((d, i) => {
-                                        return <li key={i} value={d} onClick={e => { handleSelectClick(d) }}
-                                            className="hover:bg-gray-500 cursor-pointer"
+                                        return <li key={i} value={d}
+                                            className="hover:bg-gray-500 cursor-pointer flex items-center px-2 py-1"
                                         >
+                                            <Checkbox checked={false} onChange={() => { handleSelectClick(d) }} />
                                             {d}
                                         </li>
                                     })

@@ -74,9 +74,7 @@ export default function Select({
 
     const listItemStyles = "flex items-center px-2 py-1 hover:bg-gray-200";
     return (
-        <div className={"flex flex-col w-80 border-black border-2 rounded-md p-2"}
-            ref={ref}
-        >
+        <div className={"flex flex-col w-80 border-black border-2 rounded-md p-2"} ref={ref} >
             <label htmlFor="customSelectElement" className="mb-1"> {label} </label>
 
             <ul id="customSelectElement" className={`border-2 rounded-md bg-transparent border-black p-2 max-h-36 text-sm
@@ -107,16 +105,12 @@ export default function Select({
                                 {placeholder}
                             </span>
                         :
-                        <>
-                            {
-                                selectedSingle !== "" ?
-                                    <span>
-                                        {selectedSingle}
-                                    </span>
-                                    :
-                                    <span className="text-gray-400"> Select </span>
-                            }
-                        </>
+                        selectedSingle !== "" ?
+                            <span>
+                                {selectedSingle}
+                            </span>
+                            :
+                            <span className="text-gray-400"> Select </span>
                 }
             </ul>
 
@@ -131,20 +125,20 @@ export default function Select({
                                 <li className={listItemStyles}>
                                     <Checkbox checked={selectAllChecked} onChange={handleSelectAllClick} />
                                     <span className="mr-2"> Select/unselect all </span>
-                                    {/* <CloseButton onClick={handleUnselectAllClick} /> */}
                                 </li>
 
-                                {options.map((d, i) => {
-                                    const checked = selectedContent[i]
-                                    return (
-                                        <li key={i} value={d}
-                                            className={listItemStyles}
-                                        >
-                                            <Checkbox checked={checked} onChange={() => handleSelectClick(d, i)} />
-                                            {d}
-                                        </li>
-                                    )
-                                })
+                                {
+                                    options.map((d, i) => {
+                                        const checked = selectedContent[i]
+                                        return (
+                                            <li key={i} value={d}
+                                                className={listItemStyles}
+                                            >
+                                                <Checkbox checked={checked} onChange={() => handleSelectClick(d, i)} />
+                                                {d}
+                                            </li>
+                                        )
+                                    })
                                 }
                             </>
                             :

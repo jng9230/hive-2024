@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { BiX } from "react-icons/bi";
 import Checkbox from './Checkbox';
 
@@ -17,6 +17,9 @@ export default function Select({
     isMultiSelect = isMultiSelect ? isMultiSelect : false
 
     const handleSelectClick = (d: string, i: number) => {
+        // e.stopPropagation();
+        // e.preventDefault();
+
         toggleOption(i)
     }
 
@@ -34,23 +37,41 @@ export default function Select({
 
     const [showOptions, setShowOptions] = useState(false)
     const handleShowOptions = () => setShowOptions(true);
-    const toggleShowOptions = () => setShowOptions(showOptions => !showOptions);
+    const toggleShowOptions = () => {
+
+        setShowOptions(showOptions => !showOptions)
+    };
     // const handleHideOptions = (e: React.FocusEvent) => {
     const handleHideOptions = () => {
         // console.log(e.target);
         // console.log(e.target.getAttribute('type'));
+        // console.log(e.relatedTarget)
 
         // if (e.target.getAttribute('type') === "checkbox") { return; }
-        console.log("blurring");
+        // console.log("blurring");
         setShowOptions(false);
     }
 
+
+    // handle click outside of dropdown to close
+    const ref = useRef<HTMLDivElement>(null);
+    const onClickOutside = handleHideOptions;
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (ref.current && !ref.current?.contains(e.target as Node)) {
+                onClickOutside()
+            }
+        };
+        document.addEventListener('click', (e) => { handleClickOutside(e) });
+        return () => {
+            document.removeEventListener('click', (e) => { handleClickOutside(e) });
+        };
+    }, [onClickOutside]);
+
+
     return (
         <div className={"flex flex-col w-80 border-black border-2 rounded-md p-2 space-y-2"}
-            // onMouseDown={(e) => e.preventDefault()}
-            // onBlur={e => handleHideOptions(e)}
-            // onMouseLeave={e => handleHideOptions()}
-            onBlur={handleHideOptions}
+            ref={ref}
         >
             {!isMultiSelect ?
                 <>
@@ -89,16 +110,21 @@ export default function Select({
                         }
                     </ul>
                     <div className={`border-2 border-black ${!showOptions ? "hidden" : ""}`}
+                    // onBlur={handleHideOptions}
                     >
-                        <ul className="max-h-60 overflow-y-auto">
+                        <ul className="max-h-60 overflow-y-auto" autoFocus>
                             {
                                 options.map((d, i) => {
                                     // const checked = selectedContent.has(d);
                                     const checked = selectedContent[i]
                                     return <li key={i} value={d}
                                         className="flex items-center px-2 py-1"
+                                        autoFocus
                                     >
-                                        <Checkbox checked={checked} onChange={() => { handleSelectClick(d, i) }} />
+                                        {/* <input type="checkbox" checked={checked} onChange={e => handleSelectClick(e, d, i)}
+                                            className="relative top-[2x] mr-1"
+                                        /> */}
+                                        <Checkbox checked={checked} onChange={() => handleSelectClick(d, i)} />
                                         {d}
                                     </li>
                                 })

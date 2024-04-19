@@ -14,7 +14,7 @@ export default function Checkbox({
 
     return (
         <input type="checkbox" checked={checked} onChange={handleChange}
-            className="relative top-[2x] mr-1"
+            className="relative top-[2px] mr-1 cursor-pointer"
         />
     )
 }

@@ -4,7 +4,7 @@ import Select from './components/Select';
 function App() {
   const bunchOfChoices = [...Array(100).keys()].map(String);
   const options = [
-    "really really really really really long choice wow",
+    "purple",
     "another one",
     "choice one",
     "choice two",

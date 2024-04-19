@@ -39,10 +39,10 @@ export default function Select({
         setSelectedContent(Array(options.length).fill(newStatus));
     }
 
-    const handleUnselectAllClick = () => {
-        setSelectAllChecked(false);
-        setSelectedContent(Array(options.length).fill(false));
-    }
+    // const handleUnselectAllClick = () => {
+    //     setSelectAllChecked(false);
+    //     setSelectedContent(Array(options.length).fill(false));
+    // }
 
     const [showOptions, setShowOptions] = useState(false);
     // const handleShowOptions = () => setShowOptions(true);
@@ -57,7 +57,7 @@ export default function Select({
     }
 
 
-    // handle click outside of dropdown to close
+    // close dropdown if clicking outside of it
     const ref = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -77,9 +77,13 @@ export default function Select({
         <div className={"flex flex-col w-80 border-black border-2 rounded-md p-2"}
             ref={ref}
         >
-            <label htmlFor="customSelectElement" className=""> {label} </label>
+            <label htmlFor="customSelectElement" className="mb-1"> {label} </label>
 
-            <ul id="customSelectElement" className="border-2 border-black p-2 h-12 max-h-12 text-ellipsis overflow-hidden truncate cursor-pointer"
+            <ul id="customSelectElement" className={`border-2 rounded-md bg-transparent border-black p-2 max-h-36 text-sm
+                cursor-pointer ${isMultiSelect ? "overflow-y-auto" : "text-ellipsis overflow-hidden truncate"}
+                hover:border-blue-hive
+                ${showOptions ? "border-blue-hive" : ""}
+                `}
                 onClick={toggleShowOptions}
             >
                 {
@@ -88,7 +92,8 @@ export default function Select({
                             [...selectedContent].map((d, i) => {
                                 if (d) {
                                     return (
-                                        <li key={i} className="inline-flex items-center border-2 border-gray-300 m-1 px-2 py-1 justify-between">
+                                        <li key={i} className="inline-flex items-center border-2 border-gray-300 
+                                            m-1 px-2 py-1 justify-between rounded-md">
                                             <div className="w-4/5 text-ellipsis overflow-hidden">{options[i]}</div>
                                             <CloseButton onClick={() => handleDeselect(i)} />
                                         </li>
@@ -115,48 +120,48 @@ export default function Select({
                 }
             </ul>
 
-            <div className={`border-2 border-black ${!showOptions ? "hidden" : ""}`}>
-                {
-                    isMultiSelect ?
-                        <ul className="max-h-60 overflow-y-auto" autoFocus>
-                            {/* select/unselect all */}
-                            <li className={listItemStyles}>
-                                <Checkbox checked={selectAllChecked} onChange={handleSelectAllClick} />
-                                <span> Select all </span>
-                                <CloseButton onClick={handleUnselectAllClick} />
-                            </li>
+            <div className={`border-2 border-blue-hive rounded-md bg-transparent 
+                rounded-t-none border-t-0 ${!showOptions ? "hidden" : ""}
+                relative top-[-2px]`}
+            >
+                <ul className="max-h-60 overflow-y-auto m-1" autoFocus>
+                    {
+                        isMultiSelect ?
+                            <>
+                                <li className={listItemStyles}>
+                                    <Checkbox checked={selectAllChecked} onChange={handleSelectAllClick} />
+                                    <span className="mr-2"> Select/unselect all </span>
+                                    {/* <CloseButton onClick={handleUnselectAllClick} /> */}
+                                </li>
 
-                            {
-                                options.map((d, i) => {
+                                {options.map((d, i) => {
                                     const checked = selectedContent[i]
                                     return (
                                         <li key={i} value={d}
                                             className={listItemStyles}
                                         >
-                                            {/* <input type="checkbox" checked={checked} onChange={e => handleSelectClick(e, d, i)}
-                                            className="relative top-[2x] mr-1"
-                                        /> */}
                                             <Checkbox checked={checked} onChange={() => handleSelectClick(d, i)} />
                                             {d}
                                         </li>
                                     )
                                 })
-                            }
-                        </ul>
-                        :
-                        <ul>
-                            {
-                                options.map((d, i) => {
-                                    return (
-                                        <li key={i} onClick={() => handleSelectClickSingle(d)}
-                                            className={`${listItemStyles} cursor-pointer`}>
-                                            {d}
-                                        </li>
-                                    )
-                                })
-                            }
-                        </ul>
-                }
+                                }
+                            </>
+                            :
+                            <>
+                                {
+                                    options.map((d, i) => {
+                                        return (
+                                            <li key={i} onClick={() => handleSelectClickSingle(d)}
+                                                className={`${listItemStyles} cursor-pointer`}>
+                                                {d}
+                                            </li>
+                                        )
+                                    })
+                                }
+                            </>
+                    }
+                </ul>
             </div>
         </div >
     )

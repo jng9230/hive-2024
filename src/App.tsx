@@ -16,6 +16,7 @@ function App() {
     <div className="space-y-4 p-2">
       <Select label={"Single Select"}
         options={options}
+        placeholder='Pick one!'
       />
       <Select label={"Multi-select"}
         options={options}

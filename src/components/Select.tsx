@@ -110,7 +110,7 @@ export default function Select({
                                 {selectedSingle}
                             </span>
                             :
-                            <span className="text-gray-400"> Select </span>
+                            <span className="text-gray-400"> {placeholder} </span>
                 }
             </ul>
 

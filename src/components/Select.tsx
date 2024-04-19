@@ -35,20 +35,24 @@ export default function Select({
         })
     }
 
+    const [selectAllChecked, setSelectAllChecked] = useState(false)
+    const handleSelectAllClick = () => {
+        const newStatus = !selectAllChecked;
+        setSelectAllChecked(newStatus)
+        setSelectedContent(Array(options.length).fill(newStatus))
+    }
+
+    const handleUnselectAllClick = () => {
+        setSelectAllChecked(false)
+        setSelectedContent(Array(options.length).fill(false))
+    }
+
     const [showOptions, setShowOptions] = useState(false)
     const handleShowOptions = () => setShowOptions(true);
     const toggleShowOptions = () => {
-
         setShowOptions(showOptions => !showOptions)
     };
-    // const handleHideOptions = (e: React.FocusEvent) => {
     const handleHideOptions = () => {
-        // console.log(e.target);
-        // console.log(e.target.getAttribute('type'));
-        // console.log(e.relatedTarget)
-
-        // if (e.target.getAttribute('type') === "checkbox") { return; }
-        // console.log("blurring");
         setShowOptions(false);
     }
 
@@ -67,7 +71,6 @@ export default function Select({
             document.removeEventListener('click', (e) => { handleClickOutside(e) });
         };
     }, [onClickOutside]);
-
 
     return (
         <div className={"flex flex-col w-80 border-black border-2 rounded-md p-2 space-y-2"}
@@ -89,7 +92,7 @@ export default function Select({
                 <>
                     <label htmlFor=""> {label} </label>
                     <ul className="border-2 border-black p-2 max-h-20 overflow-y-auto cursor-pointer"
-                        onClick={handleShowOptions}
+                        onClick={toggleShowOptions}
                     >
                         {
                             // [...selectedContent].map((d, i) => {
@@ -110,16 +113,19 @@ export default function Select({
                         }
                     </ul>
                     <div className={`border-2 border-black ${!showOptions ? "hidden" : ""}`}
-                    // onBlur={handleHideOptions}
                     >
                         <ul className="max-h-60 overflow-y-auto" autoFocus>
+                            {/* select/unselect all */}
+                            <li className="flex items-center px-2 py-1">
+                                <Checkbox checked={selectAllChecked} onChange={handleSelectAllClick} />
+                                <span> Select All </span>
+                                <BiX onClick={handleUnselectAllClick} className="cursor-pointer relative top-[1px] hover:text-red-600 text-lg" />
+                            </li>
                             {
                                 options.map((d, i) => {
-                                    // const checked = selectedContent.has(d);
                                     const checked = selectedContent[i]
                                     return <li key={i} value={d}
                                         className="flex items-center px-2 py-1"
-                                        autoFocus
                                     >
                                         {/* <input type="checkbox" checked={checked} onChange={e => handleSelectClick(e, d, i)}
                                             className="relative top-[2x] mr-1"

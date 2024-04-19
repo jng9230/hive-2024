@@ -5,16 +5,19 @@ import Checkbox from './Checkbox';
 
 export default function Select({
     label,
+    placeholder,
     options,
-    isMultiSelect
+    isMultiSelect,
 }: {
     label: string,
+    placeholder?: string,
     options: string[],
     isMultiSelect?: boolean
 
 }) {
     const [selectedContent, setSelectedContent] = useState<boolean[]>(Array(options.length).fill(false))
     isMultiSelect = isMultiSelect ? isMultiSelect : false
+    placeholder = placeholder ? placeholder : `Select`
 
     const handleSelectClick = (d: string, i: number) => {
         // e.stopPropagation();
@@ -95,21 +98,26 @@ export default function Select({
                         onClick={toggleShowOptions}
                     >
                         {
-                            // [...selectedContent].map((d, i) => {
-                            [...selectedContent].map((d, i) => {
-                                if (d) {
-                                    return (
-                                        <li key={i} className="inline-flex items-center border-2 border-gray-300 m-1 px-2 py-1 justify-between">
-                                            <div className="w-4/5 text-ellipsis overflow-hidden">{options[i]}</div>
-                                            <BiX className="cursor-pointer relative top-[1px] hover:text-red-600 text-lg"
-                                                onClick={() => { handleDeselect(i) }}
-                                            />
-                                        </li>
-                                    )
-                                } else {
-                                    return <span key={i}></span>
-                                }
-                            })
+                            selectedContent.reduce((total, x) => total + (x ? 1 : 0), 0) !== 0 ?
+                                // [...selectedContent].map((d, i) => {
+                                [...selectedContent].map((d, i) => {
+                                    if (d) {
+                                        return (
+                                            <li key={i} className="inline-flex items-center border-2 border-gray-300 m-1 px-2 py-1 justify-between">
+                                                <div className="w-4/5 text-ellipsis overflow-hidden">{options[i]}</div>
+                                                <BiX className="cursor-pointer relative top-[1px] hover:text-red-600 text-lg"
+                                                    onClick={() => { handleDeselect(i) }}
+                                                />
+                                            </li>
+                                        )
+                                    } else {
+                                        return <span key={i}></span>
+                                    }
+                                })
+                                :
+                                <span className="text-gray-400">
+                                    {placeholder}
+                                </span>
                         }
                     </ul>
                     <div className={`border-2 border-black ${!showOptions ? "hidden" : ""}`}
@@ -118,7 +126,7 @@ export default function Select({
                             {/* select/unselect all */}
                             <li className="flex items-center px-2 py-1">
                                 <Checkbox checked={selectAllChecked} onChange={handleSelectAllClick} />
-                                <span> Select All </span>
+                                <span> Select all </span>
                                 <BiX onClick={handleUnselectAllClick} className="cursor-pointer relative top-[1px] hover:text-red-600 text-lg" />
                             </li>
                             {

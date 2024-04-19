@@ -16,6 +16,7 @@ export default function Select({
 
 }) {
     const [selectedContent, setSelectedContent] = useState<boolean[]>(Array(options.length).fill(false))
+    const [selectedSingle, setSelectedSingle] = useState<string>("")
     isMultiSelect = isMultiSelect ? isMultiSelect : false
     placeholder = placeholder ? placeholder : `Select`
 
@@ -75,53 +76,57 @@ export default function Select({
         };
     }, [onClickOutside]);
 
+
+    const handleSelectClickSingle = (d: string) => {
+        setSelectedSingle(d)
+        handleHideOptions();
+    }
     return (
         <div className={"flex flex-col w-80 border-black border-2 rounded-md p-2 space-y-2"}
             ref={ref}
         >
-            {!isMultiSelect ?
-                <>
-                    <label htmlFor="" className=""> {label} </label>
-                    <select name="" id="" className="border-2 border-black">
-                        <option value=""> </option>
-                        {
-                            options.map((d, i) => {
-                                return <option value={d} key={i}> {d} </option>
+            <label htmlFor=""> {label} </label>
+            <ul className="border-2 border-black p-2 max-h-20 overflow-y-auto cursor-pointer"
+                onClick={toggleShowOptions}
+            >
+                {
+                    isMultiSelect ?
+                        selectedContent.reduce((total, x) => total + (x ? 1 : 0), 0) !== 0 ?
+                            [...selectedContent].map((d, i) => {
+                                if (d) {
+                                    return (
+                                        <li key={i} className="inline-flex items-center border-2 border-gray-300 m-1 px-2 py-1 justify-between">
+                                            <div className="w-4/5 text-ellipsis overflow-hidden">{options[i]}</div>
+                                            <BiX className="cursor-pointer relative top-[1px] hover:text-red-600 text-lg"
+                                                onClick={() => { handleDeselect(i) }}
+                                            />
+                                        </li>
+                                    )
+                                } else {
+                                    return <span key={i}></span>
+                                }
                             })
-                        }
-                    </select>
-                </>
-                :
-                <>
-                    <label htmlFor=""> {label} </label>
-                    <ul className="border-2 border-black p-2 max-h-20 overflow-y-auto cursor-pointer"
-                        onClick={toggleShowOptions}
-                    >
-                        {
-                            selectedContent.reduce((total, x) => total + (x ? 1 : 0), 0) !== 0 ?
-                                // [...selectedContent].map((d, i) => {
-                                [...selectedContent].map((d, i) => {
-                                    if (d) {
-                                        return (
-                                            <li key={i} className="inline-flex items-center border-2 border-gray-300 m-1 px-2 py-1 justify-between">
-                                                <div className="w-4/5 text-ellipsis overflow-hidden">{options[i]}</div>
-                                                <BiX className="cursor-pointer relative top-[1px] hover:text-red-600 text-lg"
-                                                    onClick={() => { handleDeselect(i) }}
-                                                />
-                                            </li>
-                                        )
-                                    } else {
-                                        return <span key={i}></span>
-                                    }
-                                })
-                                :
-                                <span className="text-gray-400">
-                                    {placeholder}
-                                </span>
-                        }
-                    </ul>
-                    <div className={`border-2 border-black ${!showOptions ? "hidden" : ""}`}
-                    >
+                            :
+                            <span className="text-gray-400">
+                                {placeholder}
+                            </span>
+                        :
+                        <>
+                            {
+                                selectedSingle !== "" ?
+                                    <span>
+                                        {selectedSingle}
+                                    </span>
+                                    :
+                                    <span className="text-gray-400"> Select </span>
+                            }
+                        </>
+                }
+            </ul>
+            <div className={`border-2 border-black ${!showOptions ? "hidden" : ""}`}
+            >
+                {
+                    isMultiSelect ?
                         <ul className="max-h-60 overflow-y-auto" autoFocus>
                             {/* select/unselect all */}
                             <li className="flex items-center px-2 py-1">
@@ -144,9 +149,21 @@ export default function Select({
                                 })
                             }
                         </ul>
-                    </div>
-                </>
-            }
+                        :
+                        <ul>
+                            {
+                                options.map((d, i) => {
+                                    return (
+                                        <li key={i} onClick={() => handleSelectClickSingle(d)}
+                                            className="cursor-pointer">
+                                            {d}
+                                        </li>
+                                    )
+                                })
+                            }
+                        </ul>
+                }
+            </div>
         </div >
     )
 }

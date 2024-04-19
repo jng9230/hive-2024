@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/hive-2024/static/css/main.43d9c9a4.css",
+    "main.js": "/hive-2024/static/js/main.7dfa17c5.js",
+    "index.html": "/hive-2024/index.html",
+    "main.43d9c9a4.css.map": "/hive-2024/static/css/main.43d9c9a4.css.map",
+    "main.7dfa17c5.js.map": "/hive-2024/static/js/main.7dfa17c5.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.43d9c9a4.css",
+    "static/js/main.7dfa17c5.js"
+  ]
+}

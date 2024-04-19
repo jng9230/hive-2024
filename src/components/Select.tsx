@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { BiX } from "react-icons/bi";
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import Checkbox from './Checkbox';
+import CloseButton from './CloseButton';
 
 
 export default function Select({
@@ -15,26 +15,19 @@ export default function Select({
     isMultiSelect?: boolean
 
 }) {
-    const [selectedContent, setSelectedContent] = useState<boolean[]>(Array(options.length).fill(false))
-    const [selectedSingle, setSelectedSingle] = useState<string>("")
-    isMultiSelect = isMultiSelect ? isMultiSelect : false
-    placeholder = placeholder ? placeholder : `Select`
+    const [selectedContent, setSelectedContent] = useState<boolean[]>(Array(options.length).fill(false));
+    const [selectedSingle, setSelectedSingle] = useState<string>("");
+    isMultiSelect = isMultiSelect ? isMultiSelect : false;
+    placeholder = placeholder ? placeholder : `Select`;
 
-    const handleSelectClick = (d: string, i: number) => {
-        // e.stopPropagation();
-        // e.preventDefault();
+    const handleSelectClick = (d: string, i: number) => toggleOption(i);
 
-        toggleOption(i)
-    }
-
-    const handleDeselect = (i: number) => {
-        toggleOption(i)
-    }
+    const handleDeselect = (i: number) => toggleOption(i);
 
     const toggleOption = (i: number) => {
         setSelectedContent((selectedContent) => {
-            const temp = [...selectedContent]
-            temp[i] = !selectedContent[i]
+            const temp = [...selectedContent];
+            temp[i] = !selectedContent[i];
             return temp
         })
     }
@@ -42,51 +35,51 @@ export default function Select({
     const [selectAllChecked, setSelectAllChecked] = useState(false)
     const handleSelectAllClick = () => {
         const newStatus = !selectAllChecked;
-        setSelectAllChecked(newStatus)
-        setSelectedContent(Array(options.length).fill(newStatus))
+        setSelectAllChecked(newStatus);
+        setSelectedContent(Array(options.length).fill(newStatus));
     }
 
     const handleUnselectAllClick = () => {
-        setSelectAllChecked(false)
-        setSelectedContent(Array(options.length).fill(false))
+        setSelectAllChecked(false);
+        setSelectedContent(Array(options.length).fill(false));
     }
 
-    const [showOptions, setShowOptions] = useState(false)
-    const handleShowOptions = () => setShowOptions(true);
-    const toggleShowOptions = () => {
-        setShowOptions(showOptions => !showOptions)
-    };
-    const handleHideOptions = () => {
+    const [showOptions, setShowOptions] = useState(false);
+    // const handleShowOptions = () => setShowOptions(true);
+    const toggleShowOptions = () => setShowOptions(showOptions => !showOptions);
+    const handleHideOptions = useCallback(() => {
         setShowOptions(false);
+    }, [])
+
+    const handleSelectClickSingle = (d: string) => {
+        setSelectedSingle(d);
+        handleHideOptions();
     }
 
 
     // handle click outside of dropdown to close
     const ref = useRef<HTMLDivElement>(null);
-    const onClickOutside = handleHideOptions;
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (ref.current && !ref.current?.contains(e.target as Node)) {
-                onClickOutside()
+                handleHideOptions()
             }
         };
         document.addEventListener('click', (e) => { handleClickOutside(e) });
         return () => {
             document.removeEventListener('click', (e) => { handleClickOutside(e) });
         };
-    }, [onClickOutside]);
+    }, [handleHideOptions]);
 
 
-    const handleSelectClickSingle = (d: string) => {
-        setSelectedSingle(d)
-        handleHideOptions();
-    }
+    const listItemStyles = "flex items-center px-2 py-1 hover:bg-gray-200";
     return (
-        <div className={"flex flex-col w-80 border-black border-2 rounded-md p-2 space-y-2"}
+        <div className={"flex flex-col w-80 border-black border-2 rounded-md p-2"}
             ref={ref}
         >
-            <label htmlFor=""> {label} </label>
-            <ul className="border-2 border-black p-2 max-h-20 overflow-y-auto cursor-pointer"
+            <label htmlFor="customSelectElement" className=""> {label} </label>
+
+            <ul id="customSelectElement" className="border-2 border-black p-2 h-12 max-h-12 text-ellipsis overflow-hidden truncate cursor-pointer"
                 onClick={toggleShowOptions}
             >
                 {
@@ -97,9 +90,7 @@ export default function Select({
                                     return (
                                         <li key={i} className="inline-flex items-center border-2 border-gray-300 m-1 px-2 py-1 justify-between">
                                             <div className="w-4/5 text-ellipsis overflow-hidden">{options[i]}</div>
-                                            <BiX className="cursor-pointer relative top-[1px] hover:text-red-600 text-lg"
-                                                onClick={() => { handleDeselect(i) }}
-                                            />
+                                            <CloseButton onClick={() => handleDeselect(i)} />
                                         </li>
                                     )
                                 } else {
@@ -123,29 +114,32 @@ export default function Select({
                         </>
                 }
             </ul>
-            <div className={`border-2 border-black ${!showOptions ? "hidden" : ""}`}
-            >
+
+            <div className={`border-2 border-black ${!showOptions ? "hidden" : ""}`}>
                 {
                     isMultiSelect ?
                         <ul className="max-h-60 overflow-y-auto" autoFocus>
                             {/* select/unselect all */}
-                            <li className="flex items-center px-2 py-1">
+                            <li className={listItemStyles}>
                                 <Checkbox checked={selectAllChecked} onChange={handleSelectAllClick} />
                                 <span> Select all </span>
-                                <BiX onClick={handleUnselectAllClick} className="cursor-pointer relative top-[1px] hover:text-red-600 text-lg" />
+                                <CloseButton onClick={handleUnselectAllClick} />
                             </li>
+
                             {
                                 options.map((d, i) => {
                                     const checked = selectedContent[i]
-                                    return <li key={i} value={d}
-                                        className="flex items-center px-2 py-1"
-                                    >
-                                        {/* <input type="checkbox" checked={checked} onChange={e => handleSelectClick(e, d, i)}
+                                    return (
+                                        <li key={i} value={d}
+                                            className={listItemStyles}
+                                        >
+                                            {/* <input type="checkbox" checked={checked} onChange={e => handleSelectClick(e, d, i)}
                                             className="relative top-[2x] mr-1"
                                         /> */}
-                                        <Checkbox checked={checked} onChange={() => handleSelectClick(d, i)} />
-                                        {d}
-                                    </li>
+                                            <Checkbox checked={checked} onChange={() => handleSelectClick(d, i)} />
+                                            {d}
+                                        </li>
+                                    )
                                 })
                             }
                         </ul>
@@ -155,7 +149,7 @@ export default function Select({
                                 options.map((d, i) => {
                                     return (
                                         <li key={i} onClick={() => handleSelectClickSingle(d)}
-                                            className="cursor-pointer">
+                                            className={`${listItemStyles} cursor-pointer`}>
                                             {d}
                                         </li>
                                     )
